@@ -1,0 +1,4 @@
+weights/
+artifacts/*.npz
+artifacts/*.json
+__pycache__/

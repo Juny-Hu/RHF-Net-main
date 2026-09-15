@@ -1,0 +1,5 @@
+numpy>=1.26
+Pillow>=10.0
+torch>=2.1
+torchvision>=0.16
+PySide6>=6.6
