@@ -39,13 +39,13 @@ weights/hsi/fold_1..fold_5/best.pt
 weights/fusion/fold_1..fold_5/best.pt
 artifacts/pca20_training_transform.npz
 ```
-
+## Model weights and PCA transformation file
+```text
+https://pan.baidu.com/s/1KKstmW4mgEDON9-_MMUjyQ](https://pan.baidu.com/s/1KKstmW4mgEDON9-_MMUjyQ
+key：i236
+```
 The repository intentionally does not include these large binary files.
 
 ## Input format
 
 RGB files are NumPy arrays with three channels in CHW or HWC layout. Hyperspectral files are NumPy arrays with 20 PCA channels in CHW or HWC layout. The GUI resizes inputs to 224 × 224 pixels and applies the same normalization used during model training.
-
-## Classes
-
-P1: before Qingming; P2: Qingming day to 15 days after; P3: 16–30 days after Qingming; P4: 31–45 days after Qingming.
