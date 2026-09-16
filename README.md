@@ -41,8 +41,8 @@ artifacts/pca20_training_transform.npz
 ```
 ## Model weights and PCA transformation file
 ```text
-https://pan.baidu.com/s/1KKstmW4mgEDON9-_MMUjyQ](https://pan.baidu.com/s/1KKstmW4mgEDON9-_MMUjyQ
-key：i236
+https://pan.baidu.com/s/1L-souNyQvu-DBAJcQ5cX8Q
+key：fckn
 ```
 The repository intentionally does not include these large binary files.
 
