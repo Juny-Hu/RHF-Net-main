@@ -1,10 +1,3 @@
-"""Desktop GUI for five-fold PRH-Net four-class tea classification.
-
-Inputs are a paired RGB image/array and a 20-channel PCA-HSI NumPy array.
-The application averages class-wise softmax probabilities from the five final
-fold checkpoints and reports the predicted picking-period class.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -42,7 +35,7 @@ from PySide6.QtWidgets import (
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-PRH_ROOT = PROJECT_ROOT
+RHF_ROOT = PROJECT_ROOT
 DEFAULT_CHECKPOINT_ROOT = PROJECT_ROOT / "weights" / "fusion"
 DEFAULT_RGB_CHECKPOINT_ROOT = PROJECT_ROOT / "weights" / "rgb"
 DEFAULT_HSI_CHECKPOINT_ROOT = PROJECT_ROOT / "weights" / "hsi"
@@ -74,7 +67,7 @@ class ResNet18FeatureMap(nn.Module):
         return self.layers(self.stem(x)).mean((2, 3))
 
 
-class PRHNet(nn.Module):
+class RHFNet(nn.Module):
     """Final ordinary RHF-Net: RGB-only, HSI-only, or feature concatenation."""
     def __init__(self, mode: str, hsi_channels: int = 20, num_classes: int = 4):
         super().__init__()
@@ -191,7 +184,7 @@ def load_state_dict_file(path: Path, device: torch.device):
         return torch.load(path, map_location=device)
 
 
-def load_fold_checkpoint(model: PRHNet, checkpoint: Path, device: torch.device) -> None:
+def load_fold_checkpoint(model: RHFNet, checkpoint: Path, device: torch.device) -> None:
     state = load_state_dict_file(checkpoint, device)
     model.load_state_dict(state, strict=True)
 
@@ -202,7 +195,7 @@ class FiveFoldEnsemble:
         if device_name == "auto":
             device_name = "cuda" if torch.cuda.is_available() else "cpu"
         self.device = torch.device(device_name)
-        self.models: list[PRHNet] = []
+        self.models: list[RHFNet] = []
 
     def load(self, progress=None) -> str:
         checkpoints = [self.checkpoint_root / f"fold_{fold}" / "best.pt" for fold in range(1, 6)]
@@ -211,7 +204,7 @@ class FiveFoldEnsemble:
             raise FileNotFoundError("Missing model checkpoints:\n" + "\n".join(missing))
         self.models.clear()
         for index, checkpoint in enumerate(checkpoints, start=1):
-            model = PRHNet("fusion").to(self.device)
+            model = RHFNet("fusion").to(self.device)
             load_fold_checkpoint(model, checkpoint, self.device)
             model.eval()
             self.models.append(model)
@@ -270,7 +263,7 @@ class SingleModeEnsemble:
         if device_name == "auto":
             device_name = "cuda" if torch.cuda.is_available() else "cpu"
         self.device = torch.device(device_name)
-        self.models: list[PRHNet] = []
+        self.models: list[RHFNet] = []
 
     def load(self) -> None:
         checkpoints = [self.checkpoint_root / f"fold_{fold}" / "best.pt" for fold in range(1, 6)]
@@ -279,7 +272,7 @@ class SingleModeEnsemble:
             raise FileNotFoundError("Missing model checkpoints:\n" + "\n".join(missing))
         self.models.clear()
         for checkpoint in checkpoints:
-            model = PRHNet(self.mode).to(self.device)
+            model = RHFNet(self.mode).to(self.device)
             model.load_state_dict(load_state_dict_file(checkpoint, self.device), strict=True)
             model.eval()
             self.models.append(model)
@@ -357,7 +350,7 @@ class ProbabilityRow(tk.Frame):
         self.canvas.create_rectangle(0, 0, width * self.value, 8, fill=self.color, outline="")
 
 
-class PRHApplication(tk.Tk):
+class RHFApplication(tk.Tk):
     COLORS = {
         "background": "#F3F5F7",
         "surface": "#FFFFFF",
@@ -827,7 +820,7 @@ class QtProbabilityRow(QWidget):
         )
 
 
-class PRHQtApplication(QMainWindow):
+class RHFQtApplication(QMainWindow):
     COLORS = {
         "background": "#F3F5F7",
         "surface": "#FFFFFF",
@@ -1306,7 +1299,7 @@ def main() -> None:
         return
     qt_app = QApplication.instance() or QApplication([])
     configure_qt_application(qt_app)
-    window = PRHQtApplication(
+    window = RHFQtApplication(
         args.checkpoint_root,
         args.device,
         autoload=not args.ui_smoke,
